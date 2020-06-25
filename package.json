@@ -1,0 +1,27 @@
+{
+  "name": "cbs-zip",
+  "version": "1.0.0",
+  "description": "Persist cbs zipcode table in DynamoDb",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nl-hugo/cbs-zip.git"
+  },
+  "keywords": [
+    "CBS",
+    "zipcode",
+    "postcodetabel",
+    "wijken",
+    "buurten",
+    "nederland"
+  ],
+  "author": "nl-hugo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nl-hugo/cbs-zip/issues"
+  },
+  "homepage": "https://github.com/nl-hugo/cbs-zip#readme",
+  "devDependencies": {
+  }
+}

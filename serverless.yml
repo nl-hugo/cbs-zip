@@ -1,0 +1,58 @@
+service: cbs-zip
+
+package:
+  exclude:
+    - ./**
+  include:
+    - lambda.py
+    - decimalencoder.py
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: eu-west-1
+  stage: dev
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:DescribeTable
+        - dynamodb:BatchWriteItem
+      Resource:
+        - 'arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}'
+
+functions:
+  getZipcode:
+    handler: lambda.handler
+    events:
+      - http:
+          path: zipcode/{zipcode}
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    CBSZipDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        KeySchema:
+          - AttributeName: version
+            KeyType: HASH
+          - AttributeName: pc6
+            KeyType: RANGE
+        AttributeDefinitions:
+          - AttributeName: version
+            AttributeType: S
+          - AttributeName: pc6
+            AttributeType: S
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        BillingMode: PAY_PER_REQUEST

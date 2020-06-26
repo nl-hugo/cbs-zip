@@ -10,7 +10,7 @@ import decimalencoder
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-dynamodb = boto3.resource('dynamodb', region_name='eu-west-1')
+dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
 
@@ -27,8 +27,10 @@ def handler(event, context):
     except ClientError as e:
         logging.error(e.response['Error']['Message'])
     else:
+        result = f'No result for zipcode \'{zipcode}\''
         if 'Item' in response:
-            return {
-                'statusCode': 200,
-                'body': json.dumps(response['Item'], cls=decimalencoder.DecimalEncoder)
-            }
+            result = response['Item']
+        return {
+            'statusCode': 200,
+            'body': json.dumps(result, cls=decimalencoder.DecimalEncoder)
+        }

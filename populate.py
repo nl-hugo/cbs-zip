@@ -7,9 +7,10 @@ from zipfile import ZipFile
 
 import boto3
 import pandas as pd
+from tqdm import tqdm
 
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 names = ['pc6', 'nr', 'buurt', 'wijk', 'gemeente']
 pattern = r'pc6hnr(\d{8})_(?:.)*.csv'
@@ -20,11 +21,12 @@ def load_dynamo_data(data, stage='dev', region='eu-west-1'):
     table = dynamodb.Table(f'cbs-zip-{stage}')
     logging.info(f'Write {len(data)} items to {table.table_name}')
     with table.batch_writer() as batch:
-        for item in data:
+        for item in tqdm(data):
             logging.debug(f'Item: {item}')
             batch.put_item(
                 Item=item
             )
+        logging.info('Done')
 
 
 def get_zip_file(url):
